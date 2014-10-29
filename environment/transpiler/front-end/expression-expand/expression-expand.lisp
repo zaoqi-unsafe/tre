@@ -8,12 +8,6 @@
 (defvar *expex* nil)
 (defvar *expex-import?* nil)
 
-(defun peel-identity (x)
-  (? (| (identity? x)
-        (%identity? x))
-     .x.
-     x))
-
 (define-gensym-generator expex-sym e)
 
 ;;;; IMPORT
@@ -63,8 +57,8 @@
   (+ (? (%=? val)
         (expex-guest-filter-setter val))
      (expex-guest-filter-setter `(%= ,plc ,(? (%=? val)
-                                                 (%=-place val)
-                                                 (peel-identity val))))))
+                                              (%=-place val)
+                                              val)))))
 
 (defun expex-funinfo-var-add ()
   (aprog1 (expex-sym)
@@ -189,7 +183,7 @@
 
 (defun expex-expr-%= (x)
   (with (place  (%=-place x)
-         val     (peel-identity (%=-value x)))
+         val    (%=-value x)) ; XXX
     (? (%=? val)
        (values nil (expex-body `(,val
                                  (%= ,place ,(%=-place val)))))
@@ -241,23 +235,10 @@
                                      (distinguish-vars-from-tags (list-without-noargs-tag x)))))
 
 
-;;;; TOP LEVEL
-
-(defun expression-expand-0 (x)
-  (& x
-     (= *expex-sym-counter* 0)
-     (expex-body x)))
-
-(defmacro with-transpiler-expex (&body body)
-  `(with-temporary *expex* (transpiler-expex *transpiler*)
-     ,@body))
+;;;; TOPLEVEL
 
 (defun expression-expand (x)
-  (with-transpiler-expex
-    (expression-expand-0 x)))
-
-(defun fake-expression-expand (x)
-  (with-transpiler-expex
-    (with-temporary *expex-import?* t
-      (expression-expand-0 (make-packages x))))
-  x)
+  (with-temporary *expex* (transpiler-expex *transpiler*)
+    (& x
+       (= *expex-sym-counter* 0)
+       (expex-body x))))

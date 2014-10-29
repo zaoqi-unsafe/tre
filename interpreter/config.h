@@ -26,6 +26,8 @@ typedef int bool;
 
 #define INTERPRETER
 
+#define TRE_HISTORY_SIZE            1000
+
 #ifndef TRE_QUIET_LOAD
 #define TRE_VERBOSE_LOAD	        /* Print what files are loaded. */
 #endif
@@ -43,14 +45,14 @@ typedef int bool;
 #define TREDEBUG_MAX_BREAKPOINTS	16
 
 #ifndef NUM_LISTNODES
-#define NUM_LISTNODES	            (64 * MEGA)
+#define NUM_LISTNODES	            (32 * MEGA)
 #endif
 
 #ifndef NUM_ATOMS
 #define NUM_ATOMS	                (NUM_LISTNODES / 16)
 #endif
 
-#define TRESTACK_SIZE	            (512 * KILO)
+#define TRESTACK_SIZE	            (128 * KILO)
 #define TRESTACK_SIZE_SECONDARY     (TRESTACK_SIZE / 32)
 
 #ifndef NULL

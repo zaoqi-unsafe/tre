@@ -39,8 +39,6 @@ treerror_msg (treptr expr, const char * prefix, const char * msg, va_list ap)
 		fprintf (stderr, "; Misplaced object:\n");
         treprint (expr);
     }
-	fprintf (stderr, "; Backtrace: ");
-    treprint (trebacktrace());
     fflush (stderr);
 }
 
@@ -51,6 +49,8 @@ treerror_internal (treptr expr, const char *msg, ...)
     va_start(ap, msg);
 
     treerror_msg (expr, "INTERNAL INTERPRETER ERROR", msg, ap);
+    printf ("Backtrace: ");
+    treprint (trebacktrace ());
 
 	exit (1);
 }

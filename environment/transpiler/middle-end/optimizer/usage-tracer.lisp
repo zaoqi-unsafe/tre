@@ -23,8 +23,7 @@
                            (push _ traversed-tags)
                            (traverse-statements (tag-code _))]
           traverse-statements
-            [? (| (not _)
-                  (%backtrace-pop? _.))
+            [? (not _)
                (& (funinfo-parent *funinfo*)
                   (~%ret? v))
                (with-cons a d _
