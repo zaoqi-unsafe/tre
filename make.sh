@@ -332,12 +332,12 @@ releasetests)
 	./make.sh build $ARGS || exit 1
 	./make.sh reload || exit 1
 	./make.sh distclean || exit 1
+    echo | ./tre -n -e "(setq *targets* '(c))" || exit 1
+	./make.sh compiler $ARGS || exit 1
+	./make.sh crunsh $ARGS || exit 1
+	./make.sh ctests $ARGS || exit 1
+	./make.sh distclean || exit 1
     ./make.sh all $ARGS || exit 1
-    ./make.sh backup || exit 1
-    echo "(= (transpiler-inject-debugging? *c-transpiler*) t)(compile-c-environment)" | $TRE || exit -1
-    ./make.sh crunsh $ARGS || exit 1
-    ./make.sh environment $ARGS || exit 1
-    ./make.sh restore || exit 1
 	;;
 
 install)
