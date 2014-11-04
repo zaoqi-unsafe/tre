@@ -127,8 +127,8 @@ treimage_write_conses (FILE *f)
         c = 1;
         DOTIMES(j, 8) {
             if (!(tregc_listmarks[i] & c)) {
-                treimage_write (f, &tre_lists[idx], sizeof (struct tre_list));
-                treimage_write (f, &tre_listprops[idx], sizeof (treptr));
+                treimage_write (f, &conses[idx], sizeof (struct cons));
+                treimage_write (f, &conses_props[idx], sizeof (treptr));
             }
 
             c <<= 1;
@@ -144,7 +144,7 @@ treimage_write_numbers (FILE * f)
 
     DOTIMES(i, NUM_ATOMS)
         if (tre_atom_types[i] == TRETYPE_NUMBER)
-            treimage_write (f, tre_atoms[i], sizeof (trenumber));
+            treimage_write (f, atoms[i], sizeof (trenumber));
 }
 
 void
@@ -252,7 +252,7 @@ treimage_read_atoms (FILE *f)
 
     treimage_read (f, tregc_atommarks, sizeof tregc_atommarks);
 
-    tre_atoms_free = NULL;
+    atoms_free = NULL;
     DOTIMES(i, sizeof tregc_atommarks) {
         c = 1;
         DOTIMES(j, 8) {
@@ -286,9 +286,9 @@ treimage_read_atoms (FILE *f)
                         break;
                 }
             } else {
-                *(void **) &tre_atoms[idx] = tre_atoms_free;
+                *(void **) &atoms[idx] = atoms_free;
                 tre_atom_types[idx] = TRETYPE_UNUSED;
-                tre_atoms_free = &tre_atoms[idx];
+                atoms_free = &atoms[idx];
             }
 
             c <<= 1;
@@ -314,8 +314,8 @@ treimage_read_conses (FILE * f)
         c = 1;
         DOTIMES(j, 8) {
             if (!(tregc_listmarks[i] & c)) {
-                treimage_read (f, &tre_lists[idx], sizeof (struct tre_list));
-                treimage_read (f, &tre_listprops[idx], sizeof (treptr));
+                treimage_read (f, &conses[idx], sizeof (struct cons));
+                treimage_read (f, &conses_props[idx], sizeof (treptr));
                 conses_used++;
             } else {
                 _CDR(idx) = conses_free;

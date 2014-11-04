@@ -312,11 +312,11 @@ tremain_help (void)
             "\n"
             " -h        Print this help message.\n"
             " -i <path> Load image file before source-file.\n"
-            " -e <expr> Expressions to execute before any others are read.\n"
+            " -e <expr> Expressions to evaluate before any others are read.\n"
             " -n        Load default environment and make a new default image.\n"
             " -H        Print info about hard-coded limits and exit.\n"
             "\n"
-            "See MANUAL for details.\n");
+            "Repository: https://github.com/SvenMichaelKlose/tre/\n");
 }
 
 void
@@ -326,16 +326,16 @@ tremain_print_hardinfo (void)
 	printf ("Object pointer size:        %d bytes\n", (int) sizeof (treptr));
 	printf ("Object index width:         %d bits\n", (int) TREPTR_INDEX_WIDTH);
 	printf ("Object type width:          %d bits\n", (int) TRETYPE_WIDTH);
-	printf ("Cell size:                  %d bytes\n", (int) (sizeof (struct tre_list) + sizeof (treptr)));
+	printf ("Cell size:                  %d bytes\n", (int) (sizeof (struct cons) + sizeof (treptr)));
 	printf ("Max. cells:                 %d\n", NUM_LISTNODES);
 	printf ("Max. atoms:                 %d\n", NUM_ATOMS);
 	printf ("Max. literal symbol length: %d chars\n", TRE_MAX_SYMLEN);
 	printf ("Max. literal string length: %d chars\n", TRE_MAX_STRINGLEN);
 	printf ("Max. packages:              %d\n", MAX_PACKAGES);
-	printf ("Cells start:                %8lX\n", (long) &tre_lists);
-	printf ("Cells end:                  %8lX\n", (long) &tre_lists[NUM_LISTNODES]);
-	printf ("Atoms start:                %8lX\n", (long) &tre_atoms);
-	printf ("Atoms end:                  %8lX\n", (long) &tre_atoms[NUM_ATOMS]);
+	printf ("Cells start:                %8lX\n", (long) &conses);
+	printf ("Cells end:                  %8lX\n", (long) &conses[NUM_LISTNODES]);
+	printf ("Atoms start:                %8lX\n", (long) &atoms);
+	printf ("Atoms end:                  %8lX\n", (long) &atoms[NUM_ATOMS]);
 	printf ("Max. files:                 %d\n", TRE_FILEIO_MAX_FILES);
 	printf ("Max. nested files:          %d\n", TRE_MAX_NESTED_FILES);
 	exit (0);

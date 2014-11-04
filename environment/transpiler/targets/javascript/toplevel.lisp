@@ -1,9 +1,12 @@
 ;;;;; tré – Copyright (c) 2008–2014 Sven Michael Klose <pixel@copei.de>
 
+(defun nodejs-prologue ()
+   (apply #'+ (filter [format nil "var ~A = require ('~A');~%" _ _]
+                      (transpiler-configuration *transpiler* 'nodejs-requirements))))
+
 (defun js-prologue ()
   (+ (format nil "// tré revision ~A~%" *tre-revision*)
-     (& (eq 'nodejs (transpiler-configuration *transpiler* 'environment))
-        (format nil "var fs = require ('fs');~%"))
+     (nodejs-prologue)
      (& (transpiler-cps-transformation? *transpiler*)
         (format nil ,(fetch-file "environment/transpiler/targets/javascript/environment/native/cps.js")))
      (format nil "var _I_ = 0; while (1) {switch (_I_) {case 0: ~%")))

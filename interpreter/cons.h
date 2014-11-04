@@ -10,14 +10,14 @@
 #define FIRST_LISTNODE	1
 #define LAST_LISTNODE	(NUM_LISTNODES - 1)
 
-struct tre_list {
+struct cons {
     treptr car;
     treptr cdr;
 };
 
-#define _CAR(x) 	(tre_lists[x].car)
-#define _CDR(x) 	(tre_lists[x].cdr)
-#define _CPR(x) 	(tre_listprops[x])
+#define _CAR(x) 	(conses[x].car)
+#define _CDR(x) 	(conses[x].cdr)
+#define _CPR(x) 	(conses_props[x])
 
 #define _CADR(x) 	_CAR(_CDR(x))
 
@@ -59,7 +59,10 @@ struct tre_list {
 #define DOLIST(iter, lst) _DOLIST(iter, lst)
 #else
 #define DOLIST(iter, lst) \
-    for (iter = lst; NOT_NIL(iter); iter = CDR(iter))
+    if (!LISTP(lst)) \
+        treerror_norecover (lst, "DOLIST expects a list."); \
+    else \
+        for (iter = lst; NOT_NIL(iter); iter = CDR(iter))
 #endif
 
 #define _DOLIST(iter,lst) \
@@ -71,8 +74,8 @@ struct tre_list {
 
 extern void trecons_init (void);
 
-extern struct   tre_list tre_lists[NUM_LISTNODES];
-extern treptr   tre_listprops[NUM_LISTNODES];
+extern struct   cons conses[NUM_LISTNODES];
+extern treptr   conses_props[NUM_LISTNODES];
 extern treptr   tre_default_listprop;
 extern treptr   conses_free;
 extern tre_size conses_used;
