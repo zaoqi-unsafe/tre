@@ -49,6 +49,7 @@
       (=-AREF       object array &rest indexes)
 
       (%ERROR       &rest x) ;message-string)
+      (%STRERROR    &rest x) ;libc-errno)
 
       (%FOPEN       &rest x) ;path access-mode)
 
@@ -123,6 +124,9 @@
       (%READ-CHAR       &rest x) ;stream-handle)
       (%FEOF            &rest x) ;stream-handle)
       (%FCLOSE          &rest x) ;stream-handle)
+      (%DIRECTORY       &rest x) ;pathname)
+      (%STAT            &rest x) ;pathname)
+      (READLINK         &rest x) ;pathname)
       (%TERMINAL-RAW)
       (%TERMINAL-NORMAL)
       (END-DEBUG)
