@@ -45,7 +45,7 @@ typedef int bool;
 #define TREDEBUG_MAX_BREAKPOINTS	16
 
 #ifndef NUM_LISTNODES
-#define NUM_LISTNODES	            (32 * MEGA)
+#define NUM_LISTNODES	            (64 * MEGA)
 #endif
 
 #ifndef NUM_ATOMS
@@ -72,7 +72,7 @@ typedef int bool;
 #endif
 
 #ifndef TRE_BOOTFILE
-#define TRE_BOOTFILE	"environment/main.lisp"
+#define TRE_BOOTFILE	"environment/env-load-c.lisp"
 #endif
 
 #ifndef TRE_IMAGE_HEADER

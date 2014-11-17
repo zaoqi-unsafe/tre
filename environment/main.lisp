@@ -1,27 +1,5 @@
 ;;;;; tré – Copyright (c) 2005–2014 Sven Michael Klose <pixel@copei.de>
 
-(setq *milestone* nil)
-
-;; The garbage collector keeps everything that's connected to *UNIVERSE*.
-(setq *universe*
-	  (cons '*environment-filenames*
-	  (cons 'env-load
-	  		*universe*)))
-
-(setq *variables*
-	  (cons (cons '*environment-filenames* nil)
-	  (cons (cons '*show-definitions?* nil)
-	  (cons (cons '*boot-image* nil)
-	  (cons (cons '%launchfile nil)
-	        nil)))))
-
-(setq *environment-filenames* nil)
-
-(%set-atom-fun env-load
-  #'((path &optional (back-end nil))
-	  (setq *environment-filenames* (cons (cons path back-end) *environment-filenames*))
-      (load (string-concat *environment-path* "/environment/" path))))
-
 (env-load "stage0/main.lisp" 'c)
 (env-load "stage1/main.lisp")
 (env-load "stage2/main.lisp")
@@ -34,7 +12,6 @@
 (when *tre-has-class*   (env-load "oo/class.lisp"))
 ;                        (env-load "oo/ducktype.lisp")
 ;                        (env-load "oo/ducktype-test.lisp")
-(& *tre-has-editor*     (env-load "editor/main.lisp"))
 (env-load "transpiler/main.lisp")
 
 (env-load "read-eval-loop.lisp")
