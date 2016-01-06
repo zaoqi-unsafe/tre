@@ -31,7 +31,7 @@
   (href *printer-argument-definitions* x))
 
 (defstruct print-info
-  (pretty-print?  t)
+  (pretty-print?  nil)
   (downcase?      nil)
   (indentation    0)
   (columns        nil))
@@ -120,6 +120,8 @@
         (%late-print ! str info)))))
 
 (defun %print-call (x argdef str info)
+  (debug-print x)
+  (debug-print argdef)
   (%with-brackets str info
     (%late-print x. str info)
     (let expanded (%print-get-args .x argdef)
@@ -142,6 +144,8 @@
 
 (defun %print-call? (x info)
   (& (print-info-pretty-print? info)
+     (cons? x)
+     x.
      (symbol? x.)
      (list? .x)
      (| (%get-printer-argument-definition x.)
@@ -228,6 +232,8 @@
   (princ "#" str)
   (%with-brackets str info
     (doarray (i x)
+      (| (zero? i)
+         (princ #\  str))
       (%late-print i str info))))
 
 (defun %print-function (x str info)
