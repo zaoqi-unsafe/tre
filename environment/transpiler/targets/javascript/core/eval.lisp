@@ -10,7 +10,6 @@
 (defun make-js-eval-transpiler ()
   (let tr (copy-transpiler *js-transpiler*)
     (transpiler-reset tr)
-    (= (transpiler-only-environment-macros? tr) nil)
     (@ (i *functions*)
       (let-when f (symbol-function i.)
         (transpiler-add-defined-function tr i (car f.__source) (cdr f.__source))))
@@ -25,7 +24,7 @@
 (defun eval-compile (x)
   (with-temporary *js-transpiler* (| *js-eval-transpiler* (make-js-eval-transpiler))
     (alet *js-transpiler*
-      (with-temporary (transpiler-dump-passes? !) nil
+      (with-temporary (transpiler-dump-passes? !) t
         (+ (js-eval-transpile ! x)
            (obfuscated-identifier '*native-eval-return-value*)
            " = "
