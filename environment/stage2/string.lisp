@@ -1,4 +1,4 @@
-; tré – Copyright (c) 2005–2009,2011–2015 Sven Michael Klose <pixel@copei.de>
+; tré – Copyright (c) 2005–2009,2011–2016 Sven Michael Klose <pixel@hugbox.org>
 
 (functional string-concat string== upcase downcase list-string string-list queue-string)
 
@@ -19,10 +19,7 @@
 	s))
 
 (defun queue-string (x)
-  (apply #'string-concat (@ [?
-                              (string? _)    _
-                              (character? _) (string _)]
-                            (queue-list x))))
+  (list-string (queue-list x)))
 
 (defun string-array (x)
   (alet (make-array (length x))

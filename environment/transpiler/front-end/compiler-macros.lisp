@@ -60,10 +60,11 @@
           body))
 
 (define-compiler-macro %%block (&body body)
-   (?
-     .body            `(%%block ,@(compress-%%blocks body))
-     (vm-jump? body.) `(%%block ,body.)
-     body.            body.))
+  (?
+    .body            `(%%block ,@(compress-%%blocks body))
+    (vm-jump? body.) `(%%block ,body.)
+    `(%%block ,@body)))
+;    body.            body.)) ; XXX Shouldn't this work?
 
 (define-compiler-macro function (&rest x)
   `(function ,x. ,@(!? .x
@@ -113,14 +114,14 @@
 	   (with-temporary *blocks* (. (. name end-tag) *blocks*)
          (with (b     (expander-expand *block-expander* body)
                 head  (butlast b)
-                tail  (last b)
-                ret   `(%%block
-                         ,@head
-                         ,@(? (vm-jump? tail.)
-                              tail
-                              `((%= ~%ret ,@tail)))))
-           (append ret `(,end-tag
-                         (identity ~%ret))))))
+                tail  (last b))
+           `(%%block
+              ,@head
+              ,@(? (vm-jump? tail.)
+                   tail
+                   `((%= ~%ret ,@tail)))
+              ,end-tag
+              (identity ~%ret)))))
     `(identity nil)))
 
 (define-expander-macro *block-expander* return-from (block-name expr)

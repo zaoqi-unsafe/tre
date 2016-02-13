@@ -1,4 +1,4 @@
-; tré – Copyright (c) 2010–2015 Sven Michael Klose <pixel@hugbox.org>
+; tré – Copyright (c) 2010–2016 Sven Michael Klose <pixel@hugbox.org>
 
 (defun sloppy-equal (x needle)
   (& (atom x)
@@ -31,10 +31,10 @@
         (dump-pass? end x))
      (? (equal x (last-pass-result))
         (format t "; Pass ~A outputs no difference to previous dump.~%" pass)
-        (format t (+ "~L; **** Dump of pass ~A:~%"
-                     "~A"
-                     "~L; **** End of ~A.~%")
-                  pass x pass)))
+        (progn
+          (format t "~%; **** Dump of pass ~A:~%" pass)
+          (print x)
+          (format t "~%; **** End of ~A.~%" pass))))
   x)
 
 (defun transpiler-pass (p list-of-exprs)
@@ -60,8 +60,8 @@
 
 (defmacro define-transpiler-end (name &rest name-function-pairs)
   (alet (group name-function-pairs 2)
-    `(defun ,name (list-of-lists-of-exprs)
-       (transpiler-end ,(make-keyword name)
+    `(defun ,(make-symbol (symbol-name name)) (list-of-lists-of-exprs)
+       (transpiler-end ,name
                        (list ,@(@ [`(. ,@_)] ; [. '. _]
                                   (pairlist (@ #'make-keyword (carlist !))
                                             (cdrlist !))))

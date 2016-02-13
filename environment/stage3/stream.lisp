@@ -1,4 +1,4 @@
-; tré – Copyright (c) 2005–2006,2010,2012–2015 Sven Michael Klose <pixel@copei.de>
+; tré – Copyright (c) 2005–2006,2010,2012–2016 Sven Michael Klose <pixel@copei.de>
 
 (defvar *default-stream-tabsize* 8)
 
@@ -20,7 +20,7 @@
   (peeked-char	    nil)
 
   (input-location   (make-stream-location))
-  (output-location  (make-stream-location))
+  (output-location  (make-stream-location :track? nil))
 
   (user-detail      nil))
 
@@ -30,7 +30,7 @@
 (def-stream-location %track-location (stream-location x)
   (when track?
     (? (string? x)
-       (adolist ((string-list x))
+       (adosequence x
          (%track-location stream-location !))
        (when x
          (? (== 10 x)
@@ -44,8 +44,8 @@
 
 (defun stream-princ (x str)
   (?
-    (cons? x)             (adolist (x x)
-                            (stream-princ ! str))
+    (cons? x)            (adolist (x x)
+                           (stream-princ ! str))
     (| (string? x)
        (character? x))   (unless (& (string? x)
                                     (zero? (length x)))
@@ -55,3 +55,9 @@
                            (%track-location (stream-output-location str) x)
                            (funcall (stream-fun-out str) x str))
     (error "Can only print strings and characters. Got ~A." x)))
+
+(defun stream-track-input-location? (x)
+  (stream-location-track? (stream-input-location x)))
+
+(defun (= stream-track-input-location?) (v x)
+  (= (stream-location-track? (stream-input-location x)) v))
