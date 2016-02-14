@@ -1,4 +1,4 @@
-; tré – Copyright (c) 2014–2015 Sven Michael Klose <pixel@copei.de>
+; tré – Copyright (c) 2014–2016 Sven Michael Klose <pixel@hugbox.org>
 
 (defbuiltin number? (x)
   (| (cl:numberp x)
@@ -17,28 +17,12 @@
 (defbuiltin code-char (x)
   (? (cl:characterp x)
      x
-     (cl:code-char (cl:floor x))))
+     (cl:code-char x)))
 
 (defbuiltin == (&rest x) (apply #'cl:= (chars-to-numbers x)))
-(defbuiltin number== (&rest x) (apply #'cl:= (chars-to-numbers x)))
-(defbuiltin integer== (&rest x) (apply #'cl:= (chars-to-numbers x)))
 (defbuiltin character== (&rest x) (apply #'cl:= (chars-to-numbers x)))
-(defbuiltin %+ (&rest x) (apply #'cl:+ (chars-to-numbers x)))
-(defbuiltin %- (&rest x) (apply #'cl:- (chars-to-numbers x)))
-(defbuiltin %* (&rest x) (apply #'cl:* (chars-to-numbers x)))
-(defbuiltin %/ (&rest x) (apply #'cl:/ (chars-to-numbers x)))
-(defbuiltin %< (&rest x) (apply #'cl:< (chars-to-numbers x)))
-(defbuiltin %> (&rest x) (apply #'cl:> (chars-to-numbers x)))
-(defbuiltin number+ (&rest x) (apply #'%+ x))
-(defbuiltin integer+ (&rest x) (apply #'%+ x))
-(defbuiltin character+ (&rest x) (apply #'%+ x))
-(defbuiltin number- (&rest x) (apply #'%- x))
-(defbuiltin integer- (&rest x) (apply #'%- x))
-(defbuiltin character- (&rest x) (apply #'%- x))
-(defbuiltin * (&rest x) (apply #'%* x))
-(defbuiltin / (&rest x) (apply #'%/ x))
-(defbuiltin < (&rest x) (apply #'%< x))
-(defbuiltin > (&rest x) (apply #'%> x))
+(defbuiltin character+ (&rest x) (code-char (apply #'cl:+ (chars-to-numbers x))))
+(defbuiltin character- (&rest x) (code-char (apply #'cl:- (chars-to-numbers x))))
 
 (defun bits-integer (bits)
   (cl:reduce #'((a b)
