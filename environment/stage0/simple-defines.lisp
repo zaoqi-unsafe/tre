@@ -1,10 +1,13 @@
-; tré – Copyright (c) 2005–2008,2012–2014 Sven Michael Klose <pixel@copei.de>
-
-(%defmacro defvar (name &optional (init nil))
+(%defmacro defvar (name &optional (init '%%%no-init))
   (print-definition `(defvar ,name))
   (? (not (symbol? name))
      (%error "Symbol expected as variable name."))
-  `(%defvar ,name ,init))
+  `(%defvar ,name ,(? (eq '%%%no-init init)
+                      `',init
+                      init)))
+
+(%defmacro var (name &optional (init nil))
+  `(defvar ,name ,init))
 
 (defvar *constants* nil)
 

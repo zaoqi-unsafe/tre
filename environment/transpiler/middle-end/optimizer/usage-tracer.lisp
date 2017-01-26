@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2015 Sven Michael Klose <pixel@copei.de>
-
 (defun tag-code (tag)
   (| (member-if [& (number? _)
                    (== _ tag)]
@@ -18,7 +16,7 @@
 
 (defun will-be-used-again? (x v)
    (with (traversed-tags nil
-          traversed-tag? [member _ traversed-tags :test #'integer==]
+          traversed-tag? [member _ traversed-tags :test #'==]
           traverse-tag   [unless (traversed-tag? _)
                            (push _ traversed-tags)
                            (traverse-statements (tag-code _))]

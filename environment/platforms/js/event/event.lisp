@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2013,2016 Sven Michael Klose <pixel@copei.de>
-
 (defclass caroshi-event (&key (native-event nil) (new-type nil) (new-button nil) (x nil) (y nil))
   (clr _x _y _stop)
   (= _send-natively? t)
@@ -9,22 +7,6 @@
   (!? y (= _y !))
   (!? new-button (= button !))
   this)
-
-(dont-obfuscate
-	type
-	button
-	char-code
-	key-code
-    which
-	target
-	data-transfer
-	files
-	get-as-binary
-	get-as-data-u-r-l
-	get-as-text
-    offset-parent
-    offset-top
-    offset-left)
 
 (defmember caroshi-event
 	_native-event
@@ -39,16 +21,6 @@
 	_stop
 	_send-natively?)
 
-(dont-obfuscate
-	scroll-left
-	scroll-top
-	client-left
-	client-top
-	client-x
-	client-y
-	page-x
-	page-y)
-	
 (defmethod caroshi-event _copy-native-event-data (evt)
   (= _native-event evt
      type          evt.type
@@ -60,11 +32,11 @@
   (with (docelm document.document-element
 		 body   document.body)
   	(= _x (| evt.page-x
-		     (integer+ evt.client-x (integer- (| docelm.scroll-left body.scroll-left)
-							                  (| docelm.client-left 0)))))
+		     (number+ evt.client-x (- (| docelm.scroll-left body.scroll-left)
+						              (| docelm.client-left 0)))))
   	(= _y (| evt.page-y
-		     (integer+ evt.client-y (integer- (| docelm.scroll-top body.scroll-top)
-									          (| docelm.client-top 0))))))
+		     (number+ evt.client-y (- (| docelm.scroll-top body.scroll-top)
+									     (| docelm.client-top 0))))))
   (when (defined? evt.data-transfer)
 	(= data-transfer evt.data-transfer))
   this)
@@ -72,9 +44,9 @@
 (defmethod caroshi-event mouse-event? ()
   (find type '("mousedown" "mouseup" "mousemove" "mouseover")))
 
-(defmethod caroshi-event left-button? ()   (integer== 0 button))
-(defmethod caroshi-event middle-button? () (integer== 1 button))
-(defmethod caroshi-event right-button? ()  (integer== 2 button))
+(defmethod caroshi-event left-button? ()   (== 0 button))
+(defmethod caroshi-event middle-button? () (== 1 button))
+(defmethod caroshi-event right-button? ()  (== 2 button))
 
 (defmethod caroshi-event pointer-x () _x)
 (defmethod caroshi-event pointer-y () _y)

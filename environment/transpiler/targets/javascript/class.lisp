@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2016 Sven Michael Klose <pixel@copei.de>
-
 (defun js-gen-inherit-methods (class-name base-name)
   `(,@(!? base-name
           `((= (slot-value ,(compiled-function-name class-name) 'prototype) (*object.create (slot-value ,! 'prototype)))))
@@ -16,7 +14,6 @@
           ; TOOD: Set 'super' instead.
           ,@(js-gen-inherit-constructor-calls bases)
           ,@body))
-      (declare-cps-exception ,($ class-name '?))
 	  (defun ,($ class-name '?) (x)
 	    (%%native x " instanceof " ,(compiled-function-name-string class-name)))}))
 

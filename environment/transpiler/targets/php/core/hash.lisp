@@ -1,13 +1,11 @@
-; tré – Copyright (c) 2009,2011–2016 Sven Michael Klose <pixel@copei.de>
-
-(dont-obfuscate is_a strpos substr)
-
 (defun hash-table? (x)
   (is_a x "__array"))
 
 (defun %%key (x)
   (?
-    (is_a x "__symbol")    (%%%string+ "~%S" x.n "~%P" x.p)
+    (is_a x "__symbol")    (%%%string+ "~%S" x.n "~%P" (? (keyword? x)
+                                                          "_kw"
+                                                          x.p))
     (is_a x "__cons")      (%%%string+ "~%L" x.id)
     (is_a x "__array")     (%%%string+ "~%A" x.id)
     (is_a x "__character") (%%%string+ "~%C" x.v)
@@ -20,7 +18,9 @@
          "S" (let boundary (strpos ! "~%P")
                (make-symbol (subseq ! 0 boundary)
                             (let-when p (subseq ! (+ 3 boundary))
-                              (make-symbol p))))
+                              (? (%%%== p "_kw")
+                                 *keyword-package*
+                                 (make-symbol p)))))
          "L" (%%%href *conses* (substr x 3))
          "A" (%%%href *arrays* (substr x 3))
          "C" (code-char (substr x 3))
@@ -39,13 +39,13 @@
 
 (defun alist-phphash (x)
   (let a (%%%make-hash-table)
-    (adolist (x a)
-      (%%%href-set .! a !.))))
+    (@ (i x a)
+      (%%%href-set .i a i.))))
 
 (defun phphash-alist (x)
   (with-queue q
-    (adolist ((hashkeys x) (queue-list q))
-      (enqueue q (. ! (aref x !))))))
+    (@ (i (hashkeys x) (queue-list q))
+      (enqueue q (. i (aref x i))))))
 
 (defun %href-error (h)
   (error "HREF expects an hash table instead of ~A." h))

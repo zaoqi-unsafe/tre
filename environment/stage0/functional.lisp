@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2011–2016 Sven Michael Klose <pixel@hugbox.org>
-
 (defvar *functionals* nil)
 
 (%defmacro functional (&rest names)
@@ -12,10 +10,8 @@
 (functional identity
             + - * / mod
             number+ number- number* number/
-            integer+ integer- integer* integer/
             number? == < >
             number== number< number>
-            integer== integer< integer>
             character== character< character>
             bit-or bit-and bit-xor
             << >>

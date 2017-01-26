@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2016 Sven Michael Klose <pixel@hugbox.org>
-
 (defun bind-event-listener (obj fun)
   (assert (function? fun) "BIND-EVENT-LISTENER requires a function")
   [applymethod obj fun (new caroshi-event :native-event _)])
@@ -247,8 +245,6 @@
 	   _dragged-element))
 
 ;;;; EVENT HANDLERS
-
-(dont-obfuscate get-selection range-count get-range-at collapsed)
 
 (defmethod event-manager _handle-selection (evt)
   (let has-selection?  (let s (window.get-selection)

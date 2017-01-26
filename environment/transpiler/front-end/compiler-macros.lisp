@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2006–2015 Sven Michael Klose <pixel@hugbox.org>
-
 (defvar *tagbody-replacements* nil)
 
 (defun init-compiler-macros ()
@@ -19,13 +17,13 @@
     `(%%block
        ,@(mapcan [with-compiler-tag next
                    (when _.
-                     `(,@(unless (t? _.)
+                     `(,@(unless (eq t _.)
                            `((%= ~%ret ,_.)
                              (%%go-nil ,next ~%ret)))
 				       ,@(!? (wrap-atoms ._)
 				             `((%= ~%ret (%%block ,@!))))
                        (%%go ,end-tag)
-                       ,@(unless (t? _.)
+                       ,@(unless (eq t _.)
                            (list next))))]
 			     args)
        ,end-tag

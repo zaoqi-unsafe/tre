@@ -1,11 +1,3 @@
-; tré – Copyright (c) 2005–2015 Sven Michael Klose <pixel@hugbox.org>
-
-(defun cps-marker (name)
-  (& (enabled-pass? :cps)
-     (every [not (cps-exception? _)]
-            (. name (funinfo-names *funinfo*)))))
-
-
 ;;;; INLINING
 
 (defun lambda-expand-make-inline-body (stack-places values body)
@@ -18,7 +10,9 @@
 
 (defun lambda-call-embed (lambda-call)
   (with-lambda-call (args vals body lambda-call)
-    (with ((a v) (assoc-splice (argument-expand 'dummy-in-lambda-call-embed args vals)))
+    (with (l  (argument-expand 'dummy-in-lambda-call-embed args vals)
+           a  (carlist l)
+           v  (cdrlist l))
       (@ [funinfo-var-add *funinfo* _] a)
       (lambda-expand-r (lambda-expand-make-inline-body a v body)))))
 
@@ -34,8 +28,7 @@
          new-fi  (create-funinfo :name   name
                                  :args   args
                                  :body   body
-                                 :parent *funinfo*
-                                 :cps?   (cps-marker name)))
+                                 :parent *funinfo*))
     (funinfo-make-scope-arg new-fi)
     (transpiler-add-exported-closure *transpiler* `((defun ,name ,args ,@body)))
     `(%closure ,name)))
@@ -49,15 +42,11 @@
         (copy-lambda x :body (lambda-expand-r (lambda-body x))))
       (with (name    (| (lambda-name x)
                         (funinfo-sym))
-             args    (? (& (not (enabled-pass? :cps))
-                           (native-cps-function? name))
-                        (. '~%cont (lambda-args x))
-                        (lambda-args x))
+             args    (lambda-args x)
              new-fi  (create-funinfo :name   name
                                      :args   args
                                      :body   (lambda-body x)
-                                     :parent *funinfo*
-                                     :cps?   (cps-marker name)))
+                                     :parent *funinfo*))
         (funinfo-var-add *funinfo* name)
         (with-temporary *funinfo* new-fi
           (copy-lambda x :name name :args args :body (lambda-expand-r (lambda-body x)))))))
@@ -81,9 +70,9 @@
 (defun lambda-expand-r (x)
   (?
     (atom x)   x
-    (atom x.)  (listprop-cons x x. (lambda-expand-r .x))
-    (listprop-cons x (lambda-expand-expr x.)
-	                 (lambda-expand-r .x))))
+    (atom x.)  (. x. (lambda-expand-r .x))
+    (. (lambda-expand-expr x.)
+	   (lambda-expand-r .x))))
 
 (defun lambda-expand (x)
   (with-global-funinfo

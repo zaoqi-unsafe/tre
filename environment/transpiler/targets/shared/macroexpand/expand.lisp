@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2016 Sven Michael Klose <pixel@hugbox.org>
-
 (defmacro define-shared-std-macro (targets &rest x)
   `{,@(@ [`(,($ 'define- _ '-std-macro) ,@x)]
          (intersect *targets* (make-keywords targets)))})
@@ -11,24 +9,6 @@
 (define-shared-std-macro (js php) defvar-native (&rest x)
   (print-definition `(defvar-native ,@x))
   (+! (predefined-symbols) x)
-  `(dont-obfuscate ,@x))
-
-(define-shared-std-macro (js php) declare-native-cps-function (&rest symbols)
-  (print-definition `(declare-native-cps-function ,@symbols))
-  (adolist symbols
-    (add-native-cps-function !))
-  nil)
-
-(define-shared-std-macro (js php) declare-cps-exception (&rest symbols)
-  (print-definition `(declare-cps-exception ,@symbols))
-  (adolist symbols
-    (add-cps-exception !))
-  nil)
-
-(define-shared-std-macro (js php) declare-cps-wrapper (&rest symbols)
-  (print-definition `(declare-cps-wrapper ,@symbols))
-  (adolist symbols
-    (add-cps-wrapper !))
   nil)
 
 (define-shared-std-macro (js php) assert (x &optional (txt nil) &rest args)
@@ -79,5 +59,10 @@
   `(defvar ,name ,val))
 
 (define-shared-std-macro (bc c js php) in-package (name &optional (val '%%no-value-in-in-package))
-  (cl:make-package (symbol-name name))
-  (transpiler-add-defined-package *transpiler* name))
+  (cl:eval `(cl:in-package ,(symbol-name name)))
+  (= *package* name)
+  nil)
+
+(define-shared-std-macro (bc c js php) defpackage (&rest x)
+  (cl:eval `(cl:defpackage ,@x))
+  nil)

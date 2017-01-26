@@ -1,10 +1,11 @@
-; tré – Copyright (c) 2014–2015 Sven Michael Klose <pixel@copei.de>
-
 (defvar *keyword-package* (find-package "KEYWORD"))
+(defvar *package* nil)
 
 (defbuiltin make-symbol (x &optional (package nil))
   (cl:intern x (?
-                 (cl:not package)       "TRE"
+                 (cl:not package)       (| (!? *package*
+                                               (symbol-name !))
+                                           "TRE")
                  (cl:packagep package)  (cl:package-name package)
                  (cl:symbolp package)   (cl:symbol-name package)
                  package)))
@@ -28,3 +29,9 @@
 
 (defbuiltin =-symbol-function (v x)
   (cl:setf (cl:symbol-function x) v))
+
+(defbuiltin find-symbol (x &optional (pkg *package*))
+  (cl:find-symbol (symbol-name x) (find-package (symbol-name *package*))))
+
+(defun tre-symbol (x)
+  (cl:intern (symbol-name x) "TRE"))

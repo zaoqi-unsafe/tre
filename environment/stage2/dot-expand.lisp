@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2009,2011–2016 Sven Michael Klose <pixel@copei.de>
-
 (defun dot-expand-make-expr (which num x)
   (? (< 0 num)
 	 `(,which ,(dot-expand-make-expr which (-- num) x))
@@ -49,8 +47,8 @@
 (defun dot-expand (x)
   (?
     (symbol? x)  (dot-expand-conv x)
-    (cons? x)    (listprop-cons x (dot-expand x.)
-                                  (dot-expand .x))
+    (cons? x)    (. (dot-expand x.)
+                    (dot-expand .x))
     x))
 
 (= *dot-expand* #'dot-expand)

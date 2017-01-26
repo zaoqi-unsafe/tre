@@ -1,5 +1,3 @@
-// tré - Copyright (c) 2010-2012 Sven Michael Klose <pixel@copei.de>
-
 $SYMBOLVALUES = Array ();
 $SYMBOLFUNCTIONS = Array ();
 
@@ -13,8 +11,8 @@ class __symbol {
 		$this->p = $pkg;
         $pn = $this->pn ();
         if (!isset ($GLOBALS['SYMBOLVALUES'][$pn])) {
-           $GLOBALS['SYMBOLVALUES'][$pn] = Array ($name => $this);
-           $GLOBALS['SYMBOLFUNCTIONS'][$pn] = Array ();
+            $GLOBALS['SYMBOLVALUES'][$pn] = Array ($name => $this);
+            $GLOBALS['SYMBOLFUNCTIONS'][$pn] = Array ();
         }
         return $this;
 	}
@@ -46,7 +44,8 @@ class __symbol {
 
     public function __toString ()
     {
-        return (($this->pn ()) ? ":" : "") . $this->n;
+        $pn = $this->pn ();
+        return ($pn != "NIL" ? "$pn:" : "") . $this->n;
     }
 }
 

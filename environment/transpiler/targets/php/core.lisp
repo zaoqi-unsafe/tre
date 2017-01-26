@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2016 Sven Michael Klose <pixel@copei.de>
-
 (defvar *php-core-path* "environment/transpiler/targets/php/core/")
 
 (defvar *php-core-native*
@@ -20,7 +18,7 @@
   (with-temporary *have-compiler?* nil
     (apply #'+ (@ [alet (+ *php-core-path* dir-path _)
                     (print-definition  `(php-load-core ,!))
-                    (read-file !)
+                    (load-file !)
                     (fetch-file !)]
                   files))))
 
@@ -48,8 +46,7 @@
         (php-load-core "../../../environment/"
                        "not.lisp"
                        "atom.lisp"
-                       "exception.lisp"
-                       "cps-exceptions.lisp")
+                       "exception.lisp")
         (php-load-core ""
                        "character.lisp"
                        "eq.lisp"

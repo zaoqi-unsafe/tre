@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2005–2015 Sven Michael Klose <pixel@hugbox.org>
-
 (defun cl-symbol (x)
   (make-symbol (symbol-name x) "CL"))
 
@@ -8,7 +6,7 @@
 
 (defun cl-sections-before-import ()
   (unless (configuration :exclude-core?)
-    (list (. 'cl-core (+ (string-source *cl-core*)
+    (list (. 'cl-core (+ (load-string *cl-core*)
                          (@ [`(defbuiltin ,_. (&rest x)
                                 (apply #',(cl-symbol ._.) x))]
                          +cl-renamed-imports+))))))

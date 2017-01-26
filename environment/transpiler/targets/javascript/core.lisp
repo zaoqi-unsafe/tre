@@ -1,31 +1,27 @@
-; tré – Copyright (c) 2008–2016 Sven Michael Klose <pixel@copei.de>
-
 (defvar *js-core-path* "environment/transpiler/targets/javascript/core/")
 
 (defun js-load-core (dir-path &rest files)
   (apply #'+ (@ [alet (+ *js-core-path* dir-path _)
-			      (print-definition `(js-load-core ,!))
-                  (read-file !)
+                  (print-definition `(js-load-core ,!))
+                  (load-file !)
   			      (fetch-file !)]
 		        files)))
 
 (defvar *js-core0* ,(js-load-core "" "return-value.lisp"))
 (defvar *js-core*
-	,(js-load-core ""
-		           "cons.lisp"
-		           "defined-functions.lisp"
-                   "%princ.lisp"
-                   "%write-char.lisp"
-		           "symbol.lisp"
-		           "propertylist.lisp"))
+    ,(js-load-core ""
+                    "cons.lisp"
+                    "defined-functions.lisp"
+                    "%princ.lisp"
+                    "%write-char.lisp"
+                    "symbol.lisp"
+                    "propertylist.lisp"))
 
 (defvar *js-core-debug-print* ,(js-load-core "" "debug-print.lisp"))
 
 (defvar *js-core1*
 	,(+ (js-load-core "../../../environment/"
-	                  "not.lisp"
-                      "exception.lisp"
-                      "cps-exceptions.lisp")
+	                  "not.lisp")
 		(js-load-core ""
 			          "macro.lisp"
 			          "array.lisp"
@@ -57,7 +53,6 @@
 		                        "hash.lisp"
                                 "base64.lisp"
                                 "function-source.lisp"
-                                "function-bytecode.lisp"
                                 "dot-expand.lisp"
                                 "math.lisp"
                                 "nanotime.lisp")))

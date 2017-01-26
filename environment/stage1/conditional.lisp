@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2005–2008,2011–2014,2016 Sven Michael Klose <pixel@copei.de>
-
 (defmacro when (predicate &body body)
   `(& ,predicate
 	  {,@body}))
@@ -22,7 +20,7 @@
         (? (eq 'function (caar ..cases))
            (cadar ..cases)
            (error ":TEST must be a function.")))
-        'equal))
+        'eql))
  
 (defun %case (g cases)
   (let test (%case-test cases)

@@ -1,7 +1,3 @@
-; Caroshi – Copyright (c) 2012–2013,2016 Sven Michael Klose <pixel@copei.de>
-
-(dont-obfuscate play pause start end seeking paused src type allowscriptaccess allowfullscreen wmode scale width height current-time muted)
-
 (defun make-video-flash (url width height)
   (aprog1 (new *element "object"
                         (new :classid  "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
@@ -51,8 +47,6 @@
                                        (video.pause)
                                        (= video.current-time end)))
                                 (/ (/ 1000 frames-per-second) 2)))))
-
-(declare-cps-exception video-wait-while-seeking)
 
 (defun video-wait-while-seeking (video)
   (when (| video.paused video.seeking)

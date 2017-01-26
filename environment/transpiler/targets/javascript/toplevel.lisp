@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2016 Sven Michael Klose <pixel@hugbox.org>
-
 (defun nodejs-prologue ()
    (apply #'+ (@ [format nil "var ~A = require ('~A');~%" _ _]
                  (configuration :nodejs-requirements))))
@@ -7,8 +5,6 @@
 (defun js-prologue ()
   (+ (format nil "// tré revision ~A~%" *tre-revision*)
      (nodejs-prologue)
-     (& (enabled-pass? :cps)
-        (format nil ,(fetch-file "environment/transpiler/targets/javascript/core/native/cps.js")))
      (format nil "var _I_ = 0; while (1) {switch (_I_) {case 0: ~%")))
 
 (defun js-epilogue ()
@@ -25,23 +21,17 @@
 (defun js-var-decls ()
   (list (backend-generate-code `(((%var ,@(remove-if #'emitted-decl? (funinfo-vars (global-funinfo)))))))))
 
-;(defun gen-funinfo-init ()
-;  `(push ',(compiled-list `(,x. ,(funinfo-args .x))) *application-funinfos*))
-
-;(defun gen-funinfo-inits ()
-;  (@ #'gen-funinfo-init (hash-alist (funinfos))))
-
 (defun js-sections-before-import ()
-  (. (. '*js-core0* (string-source *js-core0*))
+  (. (. '*js-core0* (load-string *js-core0*))
      (& (not (configuration :exclude-core?))
-         (+ (list (. '*js-core* (string-source *js-core*)))
+         (+ (list (. '*js-core* (load-string *js-core*)))
             (& (assert?)
-               (list (. '*js-core-debug-print* (string-source *js-core-debug-print*))))
-            (list (. '*js-core1* (string-source *js-core1*))
-                  (. 'js-core-stream (string-source (js-core-stream))))
+               (list (. '*js-core-debug-print* (load-string *js-core-debug-print*))))
+            (list (. '*js-core1* (load-string *js-core1*))
+                  (. 'js-core-stream (load-string (js-core-stream))))
             (& (eq :nodejs (configuration :platform))
-               (list (. 'js-core-nodejs (string-source (js-core-nodejs)))))
-            (& (t? *have-environment-tests*)
+               (list (. 'js-core-nodejs (load-string (js-core-nodejs)))))
+            (& (eq t *have-environment-tests*)
                (list (. 'environment-tests (make-environment-tests))))))))
 
 (defun js-environment-files ()
@@ -67,8 +57,7 @@
      (& *have-compiler?*
         (js-sections-compiler))))
 
-(defun js-ending-sections ()
-  );`((funinfo-inits . ,#'gen-funinfo-inits)))
+(defun js-ending-sections ())
 
 (defun js-expex-initializer (ex)
   (= (expex-inline? ex)         #'%slot-value?

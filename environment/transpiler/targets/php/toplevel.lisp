@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2015 Sven Michael Klose <pixel@copei.de>
-
 (defun php-prologue ()
   (with-string-stream out
     (format out "<?php // tré revision ~A~%" *tre-revision*)
@@ -30,14 +28,14 @@
   (add-defined-variable '*keyword-package*))
 
 (defun php-sections-before-import ()
-  (+ (list (. 'core-0 (string-source *php-core0*)))
+  (+ (list (. 'core-0 (load-string *php-core0*)))
      (& (not (configuration :exclude-core?))
-        (list (. 'core (string-source *php-core*))))))
+        (list (. 'core (load-string *php-core*))))))
 
 (defun php-sections-after-import ()
   (+ (& (not (configuration :exclude-core?))
-        (list (. 'core-2 (string-source *php-core2*))))
-     (& (t? *have-environment-tests*)
+        (list (. 'core-2 (load-string *php-core2*))))
+     (& (eq t *have-environment-tests*)
         (list (. 'env-tests (make-environment-tests))))))
 
 (defun php-identifier-char? (x)

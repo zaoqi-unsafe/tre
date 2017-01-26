@@ -1,7 +1,3 @@
-; tré – Copyright (c) 2008–2016 Sven Michael Klose <pixel@hugbox.org>
-
-(defvar *js-compiled-symbols* (make-hash-table :test #'eq))
-
 (define-codegen-macro-definer define-js-macro *js-transpiler*)
 
 
@@ -70,10 +66,8 @@
 
 (define-js-macro %function-return (name)
   (alet (get-funinfo name)
-    (? (& (funinfo-var? ! '~%ret)
-          (not (funinfo-cps? !)))
-       `(,*js-indent* "return " ~%ret ,*js-separator*)
-       "")))
+    (& (funinfo-var? ! '~%ret)
+       `(,*js-indent* "return " ~%ret ,*js-separator*))))
 
 (define-js-macro %function-epilogue (name)
   (| `((%function-return ,name)
@@ -200,25 +194,27 @@
 ;;;; METACODES
 
 (defun make-compiled-symbol-identifier (x)
-  ($ (? (keyword? x)
-        'keyword_
-        'symbol_)
+  ($ (!? (symbol-package x)
+         (+ (symbol-name !) "_p_")
+         "")
      x))
+
+(defvar *js-compiled-symbols* (make-hash-table :test #'eq))
 
 (define-js-macro quote (x)
   (with (f  [let s (compiled-function-name-string 'symbol)
               `(,s " (\"" ,(obfuscated-symbol-name _) "\", "
 	            ,@(? (keyword? _)
-	                 `("KEYWORDPACKAGE")
-	                 '(("null")))
+	                 '("KEYWORDPACKAGE")
+                     `(,s "(\"" ,(obfuscated-symbol-name (symbol-package x)) "\")"))
 	            ")")])
-      (cache (aprog1 (make-compiled-symbol-identifier x)
-               (push `("var " ,(obfuscated-identifier !)
-                       " = "
-                       ,@(f x)
-                       ,*js-separator*)
-                       (raw-decls)))
-             (href *js-compiled-symbols* x))))
+    (cache (aprog1 (make-compiled-symbol-identifier x)
+             (push `("var " ,(obfuscated-identifier !)
+                     " = "
+                     ,@(f x)
+                     ,*js-separator*)
+                   (raw-decls)))
+           (href *js-compiled-symbols* x))))
 
 (define-js-macro %slot-value (x y)
   `(%%native ,x "." ,y))
@@ -255,12 +251,6 @@
 
 (define-js-macro %global (x)
   x)
-
-
-;;;; CPS FIXUPS
-
-(define-js-macro cps-toplevel-return-value (x)
-  `(%%native "function (r) { " ,x " = r; }"))
 
 
 ;;;; MISCELLANEOUS

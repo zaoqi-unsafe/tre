@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2006–2015 Sven Michael Klose <pixel@copei.de>
-
 (defvar *funinfo*)
 
 (define-gensym-generator funinfo-sym ~f)
@@ -30,8 +28,7 @@
   ; Number of jump tags in body.
   (num-tags     nil)
   
-  (globals      nil)
-  (cps?         nil))
+  (globals      nil))
 
 (defun funinfo-framesize (fi)
   (alet (funinfo-transpiler fi)
@@ -70,8 +67,7 @@
       :local-function-args (copy-list local-function-args)
       :fast-scope?  fast-scope?
       :num-tags     num-tags
-      :globals      (copy-list globals)
-      :cps?         cps?))
+      :globals      (copy-list globals)))
 
 (defun get-funinfo (name &optional (tr *transpiler*))
   (& name (href (transpiler-funinfos tr) name)))
@@ -88,9 +84,7 @@
   `(with-temporary *funinfo* (get-lambda-funinfo ,x)
      ,@body))
 
-(defun create-funinfo (&key name parent args body
-                            (transpiler *transpiler*)
-                            (cps? nil))
+(defun create-funinfo (&key name parent args body (transpiler *transpiler*))
   (& (href (transpiler-funinfos transpiler) name)
      (error "FUNFINFO for ~A is already memorized." name))
   (with (argnames (argument-expand-names 'lambda-expand args)
@@ -99,9 +93,7 @@
                                 :args          argnames
                                 :body          body
                                 :parent        parent
-                                :transpiler    transpiler
-                                :cps?          (unless (transpiler-cps-exception? transpiler name)
-                                                 cps?)))
+                                :transpiler    transpiler))
     (= (href (transpiler-funinfos transpiler) name) fi)
     (funinfo-var-add fi '~%ret)
     (& (transpiler-copy-arguments-to-stack? transpiler)

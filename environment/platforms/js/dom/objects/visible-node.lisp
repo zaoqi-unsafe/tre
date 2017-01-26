@@ -1,19 +1,14 @@
-; tré – Copyright (c) 2008–2013,2015–2016 Sven Michael Klose <pixel@copei.de>
-
 (defclass visible-node ())
 
-,(let n '(parent-node
-		  next-sibling
-		  previous-sibling
-		  clone-node
-		  insert-before
-		  remove-child
-		  text-content)
-   `{(defmember visible-node ,@n)
-	 (dont-obfuscate ,@n)})
-
 (defmember visible-node
-  _unhooks)
+    _unhooks
+    parent-node
+    next-sibling
+    previous-sibling
+    clone-node
+    insert-before
+    remove-child
+    text-content)
 
 (defmethod visible-node clone (children?)
   (dom-tree-extend (clone-node children?)))

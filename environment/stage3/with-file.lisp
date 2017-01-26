@@ -1,11 +1,8 @@
-; tré – Copyright (c) 2005–2006,2008,2011–2013,2015–2016 Sven Michael Klose <pixel@hugbox.org>
-
-(defmacro with-open-file (var file &body body)
-  (with-gensym g
-    `(with (,var ,file
-            ,g   (block nil ,@body))
-       (close ,var)
-       ,g)))
+(defmacro with-open-file (str file &body body)
+  `(let ,str ,file
+     (prog1 (block nil
+              ,@body)
+       (close ,str))))
 
 (defmacro with-file (f path direction &body body)
   `(with-open-file ,f (open ,path :direction ,direction)

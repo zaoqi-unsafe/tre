@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2005–2009,2012–2015 Sven Michael Klose <pixel@copei.de>
-
 (defmacro with-queue-string-while (q pred &body body)
   `(with-queue ,q
      (while ,pred (queue-string ,q)
@@ -17,14 +15,14 @@
   (xml-error "Unexpected end of file."))
 
 (defun xml-special-char? (x)
-  (in=? x #\< #\> #\/ #\: #\=))
+  (in? x #\< #\> #\/ #\: #\=))
 
 (defun xml-whitespace? (x)
   (& (< x 33)
      (> x 0)))
 
 (defun xml-text-char? (x)
-  (not (in=? x #\<))); #\&)))
+  (not (in? x #\<))); #\&)))
 
 (defun xml-identifier-char? (x)
   (not (| (xml-special-char? x)

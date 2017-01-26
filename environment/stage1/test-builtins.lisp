@@ -1,4 +1,18 @@
-; tré – Copyright (C) 2006,2009,2011–2016 Sven Michael Klose <pixel@hugbox.org>
+(define-test "NOT returns NIL for empty string"
+  ((not ""))
+  nil)
+
+(define-test "Empty string is not NIL"
+  ((eq nil ""))
+  nil)
+
+(define-test "KEYWORD? recognizes keywords"
+  ((keyword? :a))
+  t)
+
+(define-test "KEYWORD? returns NIL for non-keywords"
+  ((keyword? 'a))
+  nil)
 
 (define-test "CAR accepts NIL"
   ((car nil))

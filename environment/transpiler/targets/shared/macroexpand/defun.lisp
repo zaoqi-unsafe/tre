@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2016 Sven Michael Klose <pixel@copei.de>
-
 (defun collect-symbols (x)
   (with-queue q
     (with (f    [& _
@@ -35,7 +33,7 @@
             (prog1
               {,@body}
               (& ~%profiling-timer
-                 (add-profile ',name (integer- (%%%nanotime) ~%profiling-timer)))))))
+                 (add-profile ',name (- (%%%nanotime) ~%profiling-timer)))))))
      body))
 
 (defun shared-defun-memorize-source (name args body)

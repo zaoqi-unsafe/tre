@@ -1,7 +1,4 @@
-;;;;; tré – Copyright (c) 2005,2008–2009,2011–2014 Sven Michael Klose <pixel@copei.de>
-
 (functional list?)
-(declare-cps-exception list?)
 
 (%defun list? (x)
   (? (cons? x)

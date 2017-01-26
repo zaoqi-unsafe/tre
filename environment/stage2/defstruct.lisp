@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2005–2009,2011–2016 Sven Michael Klose <pixel@hugbox.org>
-
 (defun %struct-option-keyword? (x)
   (in? x :constructor :global))
 
@@ -55,7 +53,6 @@
   (with (fname  (%struct-field-name field)
          aname  (%struct-accessor-name name fname))
     `{(functional ,aname)
-      (declare-cps-exception ,aname ,(=-make-symbol aname))
       (defun ,aname (arr)
         (aref arr ,index))
       (defun (= ,aname) (val arr)
@@ -106,8 +103,7 @@
 (defun %defstruct-expander (name &rest fields-and-options)
   (with ((fields options) (%struct-sort-fields fields-and-options))
     (%struct-add-def name fields)
-    `{(declare-cps-exception ,name)
-      ,(%struct-constructor name fields options)
+    `{,(%struct-constructor name fields options)
       ,(%struct-predicate name)
       ,@(%struct-accessors name fields options)
       (defmacro ,($ "WITH-" name) (s &body body)

@@ -1,32 +1,19 @@
-; tré – Copyright (c) 2008–2014,2016 Sven Michael Klose <pixel@hugbox.org>
-
-(declare-cps-exception + - * / mod
-                       == < > <= >=
-                       number?
-                       number number+ number- number== number< number> number<=
-                       integer integer+ integer- integer== integer< integer> integer<= integer>=
-                       character== character< character> character<= character>=)
-
 (defun number== (x &rest y)
   (every [%%%== x _] y))
 
 (defmacro def-simple-op (op)
   `(defun ,op (&rest x)
      (let n x.
-	   (adolist (.x n)
-         (= n (,($ '%%% op) n !))))))
+	   (@ (i .x n)
+         (= n (,($ '%%% op) n i))))))
 
-(mapcar-macro x '(* / mod)
+(mapcar-macro x '(* / mod)  ; TODO: Map to %%%…?
   `(def-simple-op ,x))
 
 (defun number+ (&rest x)
   (let n x.
-	(adolist (.x n)
-	  (= n (%%%+ n !)))))
-
-(defun integer+ (n &rest x)
-  (adolist (x n)
-    (= n (%%%+ n !))))
+	(@ (i .x n)
+	  (= n (%%%+ n i)))))
 
 (defmacro define-generic-transpiler-minus ()
   (let gen-body `(? .x
@@ -37,47 +24,23 @@
     `{(defun - (&rest x)
 	    ,gen-body)
 	  (defun number- (&rest x)
-	    ,gen-body)
-      (defun integer- (&rest x)
-        (? .x
-           (let n x.
-	         (adolist (.x n)
-	           (= n (%%%- n !))))
-           (%%%- x.)))}))
+	    ,gen-body)}))
 
 (define-generic-transpiler-minus)
 
-; TODO: CHARACTER shouldn't be a NUMBER.
 (defmacro def-generic-transpiler-comparison (name)
   (let op ($ '%%% name)
     `{(defun ,name (n &rest x)
-        (assert (| (number? n)
-                   ,(? (eq name '+)
-                       '(string? n)))
-                "NUMBER expected instead of ~A." n)
-        (adolist (x t)
-          (assert (| (number? !)
-                     ,(? (eq name '+)
-                         '(string? !)))
-                  "NUMBER expected instead of ~A." !)
-          (| (,op n !)
-             (return nil))
-          (= n !)))
-	  (defun ,($ 'integer name) (n &rest x)
-        (assert (integer? n) "NUMBER expected instead of ~A." n)
-        (adolist (x t)
-          (assert (integer? !) "NUMBER expected instead of ~A." !)
-          (| (,op n !)
-             (return nil))
-          (= n !)))
+        (@ (i x t)
+          (| (,op n i)
+             (return))
+          (= n i)))
 	  (defun ,($ 'character name) (n &rest x)
-        (assert (character? n) "NUMBER expected instead of ~A." n)
         (let n (char-code n)
-          (adolist (x t)
-            (assert (character? !) "NUMBER expected instead of ~A." !)
-            (| (,op n (char-code !))
-               (return nil))
-            (= n !))))}))
+          (@ (i x t)
+            (| (,op n (char-code i))
+               (return))
+            (= n i))))}))
 
 (def-generic-transpiler-comparison ==)
 (def-generic-transpiler-comparison <)

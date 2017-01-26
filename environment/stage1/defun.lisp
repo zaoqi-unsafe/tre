@@ -1,5 +1,3 @@
-;;;; tré – Copyright (c) 2005–2008,2010–2014 Sven Michael Klose <pixel@hugbox.org>
-
 (defvar *function-sources* nil)
 
 (%defun %defun-arg-keyword (args)
@@ -34,3 +32,6 @@
            (block nil
              ,@(%add-documentation name body))))
 	   (return-from nil ',name))))
+
+(defmacro fn (name args &body body)
+  `(defun ,name ,args ,@body))

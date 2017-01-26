@@ -1,11 +1,8 @@
-; tré – Copyright (c) 2008–2016 Sven Michael Klose <pixel@copei.de>
-
 (defvar *transpiler* nil)
 (defvar *transpiler-log* nil)
 (defvar *default-transpiler* nil)
 (defvar *optional-passes* '(:accumulate-toplevel
                             :inject-debugging
-                            :cps
                             :obfuscate))
 
 (defvar *print-executed-functions?* nil)
@@ -147,10 +144,6 @@
   (accumulated-toplevel-expressions nil)
   (predefined-symbols       nil)
 
-  (cps-exceptions           (make-hash-table :test #'eq))
-  (cps-wrappers             (make-hash-table :test #'eq))
-  (native-cps-functions     (make-hash-table :test #'eq))
-
   ; Literals that must be declared or cached before code containing them is emitted.
   (compiled-chars           (make-hash-table :test #'==))
   (compiled-numbers         (make-hash-table :test #'==))
@@ -263,10 +256,6 @@
         :accumulated-toplevel-expressions (copy-list accumulated-toplevel-expressions)
         :predefined-symbols       (copy-list predefined-symbols)
 
-        :cps-exceptions           (copy-hash-table cps-exceptions)
-        :cps-wrappers             (copy-hash-table cps-wrappers)
-        :native-cps-functions     (copy-hash-table native-cps-functions)
-
         :compiled-chars           (copy-hash-table compiled-chars)
         :compiled-numbers         (copy-hash-table compiled-numbers)
         :compiled-strings         (copy-hash-table compiled-strings)
@@ -301,9 +290,6 @@
 (transpiler-getter defined-variable        (href (transpiler-defined-variables tr) x))
 (transpiler-getter defined-package         (href (transpiler-defined-variables tr) x))
 (transpiler-getter literal?                (href (transpiler-literals tr) x))
-(transpiler-getter cps-exception?          (href (transpiler-cps-exceptions tr) x))
-(transpiler-getter cps-wrapper?            (href (transpiler-cps-wrappers tr) x))
-(transpiler-getter native-cps-function?    (href (transpiler-native-cps-functions tr) x))
 (transpiler-getter host-function           (href (transpiler-host-functions tr) x))
 (transpiler-getter host-function-arguments (car (transpiler-host-function tr x)))
 (transpiler-getter host-function-body      (cdr (transpiler-host-function tr x)))
@@ -322,12 +308,6 @@
                                          x)
 (transpiler-getter add-literal           (= (href (transpiler-literals tr) x) t)
                                          x)
-(transpiler-getter add-cps-exception     (= (href (transpiler-cps-exceptions tr) x) t)
-                                         x)
-(transpiler-getter add-cps-wrapper       (= (href (transpiler-cps-wrappers tr) x) t)
-                                         x)
-(transpiler-getter add-native-cps-function  (= (href (transpiler-native-cps-functions tr) x) t)
-                                            x)
 (transpiler-getter-not-global macro? (| (expander-has-macro? (transpiler-std-macro-expander tr) x)
                                         (expander-has-macro? (transpiler-codegen-expander tr) x)))
 (transpiler-getter imported-variable? (& (transpiler-import-from-host? tr)

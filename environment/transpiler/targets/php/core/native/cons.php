@@ -1,5 +1,3 @@
-// tré – Copyright (c) 2010–2013,2016 Sven Michael Klose <pixel@copei.de>
-
 $CONSID = 0;
 
 class __cons {
@@ -19,6 +17,6 @@ class __cons {
 
     public function __toString ()
     {
-        return '(' . $this->a () . ' . ' . $this->d () . ')';
+        return '(' . $this->a . ' . ' . $this->d . ')';
     }
 }

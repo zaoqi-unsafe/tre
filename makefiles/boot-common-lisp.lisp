@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2014–2015 Sven Michael Klose <pixel@hugbox.org>
-
 (defun cl-packages ()
   `((defpackage "TRE-CORE"
       (:export       ,@(@ #'symbol-name
@@ -11,7 +9,8 @@
                              +core-variables+
                              (carlist +cl-renamed-imports+))))
       (:import-from  "CL" ,@(@ #'symbol-name
-                               (+ +cl-symbol-imports+
+                               (+ (list 'format)
+                                  +cl-symbol-imports+
                                   +cl-function-imports+))))
     (defpackage "TRE"
       (:use "TRE-CORE"))))
@@ -19,7 +18,6 @@
 (alet (copy-transpiler *cl-transpiler*)
   (with-temporary *transpiler* !
     (add-defined-variable '*macros*))
-;  (= (transpiler-dump-passes? !) t)
   (with (c           (compile-sections (list (. 'dummy nil)) :transpiler !)
          print-info  (make-print-info :pretty-print? nil))
     (with-output-file o "boot-common.lisp"

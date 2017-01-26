@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2013,2016 Sven Michael Klose <pixel@copei.de>
-
 (defun make-log-stream ()
   (make-stream :fun-in    #'((str))
                :fun-out   #'((c str)
@@ -23,14 +21,6 @@
                             :font-weight "bold"))
  
 (defvar *log-event-module* nil)
-
-(dont-obfuscate
-	window
-	document
-	title
-    open
-	writeln
-	scroll-to)
 
 (defun open-log-window ()
   (unless *logwindow*
@@ -63,8 +53,6 @@
 (defvar *logwindow-buffer* "")
 (defvar *logwindow-timer* nil)
 
-(declare-cps-exception logwindow-add-string-0 logwindow-add-string logwindow-timer)
-
 (defun logwindow-add-string-0 (txt)
   (open-log-window)
   (*logwindow*.document.body.first-child.add-text txt)
@@ -83,7 +71,7 @@
   txt)
 
 ,(? *transpiler-log*
-   `(defun log (txt)
+   `(defun log-message (txt)
       (logwindow-add-string (+ txt (string (code-char 10))))
       txt)
-   `(defmacro log (txt)))
+   `(defmacro log-message (txt)))

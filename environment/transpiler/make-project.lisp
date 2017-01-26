@@ -1,12 +1,11 @@
-; tré – Copyright (c) 2008–2013,2015 Sven Michael Klose <pixel@copei.de>
-
 (defun make-project (project-name sections &key transpiler
-                                                (modified-file-getter  nil)
+                                                (section-list-gen      nil)
                                                 (sections-to-update    nil)
                                                 (recompiler-path       nil)
                                                 (emitter               nil)
                                                 (obfuscate?            nil))
   (format t "; Making project '~A'...~%" project-name)
+  (= sections (ensure-list sections))
   (= (transpiler-sections-to-update transpiler) sections-to-update)
   (& obfuscate?
      (transpiler-enable-pass transpiler :obfuscate))
@@ -14,21 +13,18 @@
     (!? emitter
         (funcall ! code))
     (awhen recompiler-path
-      (| modified-file-getter
-         (error (+ "The recompiler requires argument MODIFIED-FILE-GETTER which is a function "
-                   "without arguments returning a list of modified sections.")))
-      ; TODO: Rename MODIFIED-FILE-GETTER to GEN-FILELIST.
+      (| section-list-gen
+         (error (+ "The recompiler requires argument SECTION-LIST-GEN which is a function "
+                   "without arguments that returns a list of names of modified sections.")))
       (format t "; Making recompiler '~A'...~F" recompiler-path)
-      (= *allow-redefinitions?* t)
       (sys-image-create recompiler-path
-                        #'(()
-                             (make-project project-name sections
-                                           :transpiler            transpiler
-                                           :modified-file-getter  modified-file-getter
-                                           :sections-to-update    (funcall modified-file-getter)
-                                           :recompiler-path       recompiler-path
-                                           :emitter               emitter
-                                           :obfuscate?            obfuscate?)
-                             (quit)))
+                        [0 (make-project project-name sections
+                                         :transpiler          transpiler
+                                         :section-list-gen    section-list-gen
+                                         :sections-to-update  (funcall section-list-gen)
+                                         :recompiler-path     recompiler-path
+                                         :emitter             emitter
+                                         :obfuscate?          obfuscate?)
+                           (quit)])
       (format t " OK.~%"))
     code))

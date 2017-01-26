@@ -1,5 +1,3 @@
-; Caroshi – Copyright (c) 2008–2016 Sven Michael Klose <pixel@copei.de>
-
 (defun php-constructor-name (class-name)
   ($ class-name '-constructor))
 
@@ -58,8 +56,7 @@
 (define-php-std-macro finalize-class (class-name)
   (let classes (thisify-classes)
     (!? (href classes class-name)
-	    `{(dont-obfuscate is_a)
-	      (defun ,($ class-name '?) (x)
+	    `{(defun ,($ class-name '?) (x)
 	        (& (object? x)
 	           (is_a x ,(obfuscated-identifier class-name))
                x))

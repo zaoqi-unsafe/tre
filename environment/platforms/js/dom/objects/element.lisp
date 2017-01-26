@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2016 Sven Michael Klose <pixel@copei.de>
-
 (defvar *attribute-xlat*
   (new "class" "className"))
 
@@ -28,8 +26,8 @@
 
 (defclass (caroshi-element visible-node) ())
 
-,(let x
-  '(append-child
+(defmember caroshi-element
+    append-child
 	attributes
 	child-nodes
 	children
@@ -50,8 +48,6 @@
     query-selector
     query-selector-all
     _caroshi-rotation)
-  `{(defmember caroshi-element ,@x)
-	(dont-obfuscate ,@x)})
 
 (defmethod caroshi-element child-array ()
   this.child-nodes)
@@ -160,9 +156,6 @@
   (adolist attrs
     (remove-attribute !)))
 
-(defmethod caroshi-element has-name-attribute? ()
-  (has-attribute? "name"))
-
 (defmethod caroshi-element has-name? (x)
   (member (downcase (get-name)) (@ #'downcase (ensure-list x)) :test #'string==))
 
@@ -218,11 +211,6 @@
 	  (unless (empty-string? !)
 	    (number !))))
 
-(defmethod caroshi-element tag-name? (n)
-  (? (cons? n)
-     (member-if [tag-name? _] n)
-     (member (downcase tag-name) (@ #'downcase (ensure-list n)) :test #'string==)))
-
 (defmethod caroshi-element set-styles (styles)
   (maphash #'((k v)
                (set-style k v))
@@ -250,7 +238,7 @@
   (number (get-style "opacity")))
 
 (defmethod caroshi-element set-opacity (x)
-  (? (integer== 1 x)
+  (? (== 1 x)
      (& (defined? style.remove-property)
 	    (style.remove-property "opacity"))
      (set-style "opacity" x))

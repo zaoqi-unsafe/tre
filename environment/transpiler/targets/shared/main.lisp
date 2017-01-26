@@ -1,10 +1,9 @@
-; tré – Copyright (c) 2010–2015 Sven Michael Klose <pixel@copei.de>
-
 (env-load "transpiler/targets/shared/builtin.lisp")
 (env-load "transpiler/targets/shared/core-variables.lisp")
 (env-load "transpiler/targets/shared/functionals.lisp")
 (env-load "transpiler/targets/shared/noargs-tag.lisp")
 (env-load "transpiler/targets/shared/c-identifier-char-p.lisp")
+(env-load "transpiler/targets/shared/load-file.lisp")
 (env-load "transpiler/targets/shared/macroexpand/defun.lisp")
 (env-load "transpiler/targets/shared/macroexpand/class.lisp")
 (env-load "transpiler/targets/shared/macroexpand/opt-string-concat.lisp")

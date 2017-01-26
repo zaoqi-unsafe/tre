@@ -1,11 +1,10 @@
-; tré – Copyright (c) 2008–2015 Sven Michael Klose <pixel@copei.de>
-
 (defvar *cl-builtins* nil)
 
 (defun cl-load-base (dir-path &rest files)
   (apply #'+ (@ [alet (+ dir-path _)
-			      (print-definition '(cl-load-base ,!))
-                  (read-file !)
+			      (print-definition `(cl-load-base ,!))
+                  (with-temporary *package* (make-symbol "TRE-CORE")
+                    (load-file !))
   			      (fetch-file !)]
 		        files)))
 

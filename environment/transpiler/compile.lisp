@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2016 Sven Michael Klose <pixel@copei.de>
-
 (defun update-section? (section cached-sections)
   (| (member section (sections-to-update))
      (not (assoc section cached-sections))))
@@ -76,7 +74,7 @@
 
 (defun frontend-section-load (path)
   (print-definition `(load ,path))
-  (read-file path))
+  (load-file path))
 
 (defun section-comment (section)
   `((%%comment "Section " ,(? (symbol? section)

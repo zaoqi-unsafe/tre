@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2005–2016 Sven Michael Klose <pixel@hugbox.org>
-
 (defun quote-expand (x)
   (with (atomic [? (constant-literal? _)
                    _
@@ -32,6 +30,6 @@
                   _]
          walk   [? (atom _)
 	               (disp _)
-                   (listprop-cons _ (walk (disp _.))
-                                    (walk ._))])
+                   (. (walk (disp _.))
+                      (walk ._))])
     (car (walk (list x)))))

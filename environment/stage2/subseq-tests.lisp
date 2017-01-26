@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2007–2009,2011–2014 Sven Michael Klose <pixel@copei.de>
-
 (define-test "LIST-SUBSEQ work at the beginning"
   ((list-subseq '(a b c) 0 1))
   '(a))
@@ -20,6 +18,6 @@
   ((subseq "lisp" 10))
   nil)
 
-(define-test "SUBSEQ returns empty string when start and end are the same"
-  ((string== "" (subseq "lisp" 1 1)))
+(define-test "SUBSEQ returns NIL when start and end are the same"
+  ((not (subseq "lisp" 1 1)))
   t)

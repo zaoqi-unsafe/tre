@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2013,2015–2016 Sven Michael Klose <pixel@copei.de>
-
 (defun make-symbol (x &optional (pkg nil))
   (symbol x pkg))
 
@@ -30,8 +28,6 @@
     (not x)   nil
     (eq t x)  nil
     x.p))
-
-(dont-obfuscate is_a)
 
 (defun symbol? (x)
   (| (not x)

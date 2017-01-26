@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2016 Sven Michael Klose <pixel@hugbox.org>
-
 (env-load "stage4/@.lisp")
 (env-load "stage4/clr.lisp")
 (env-load "stage4/compose.lisp")
@@ -26,11 +24,11 @@
 (env-load "stage4/replace.lisp")
 (env-load "stage4/search.lisp")
 (env-load "stage4/sort.lisp")
-(env-load "stage4/split.lisp" :c :cl)
+(env-load "stage4/split.lisp" :cl)
 (env-load "stage4/split-tests.lisp")
 (env-load "stage4/head-p.lisp")
 (env-load "stage4/trim.lisp")
 (env-load "stage4/define-slot-setter.lisp")
 (env-load "stage4/merge.lisp")
 (env-load "stage4/unique.lisp")
-;(env-load "stage4/hash-tests.lisp")
+(env-load "stage4/hash-tests.lisp")

@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2009,2011–2016 Sven Michael Klose <pixel@copei.de>
-
 (defun transpiler-translate-symbol (tr from to)
   (acons! from to (transpiler-symbol-translations tr)))
 
@@ -48,13 +46,16 @@
 	                  (corrected-chars (? (global-variable-notation? !)
                                           (capitals !)
     	                                  (camel-notation (string-list !) 0))
-                                       0)))))) ; TODO: Argument keywords for local functions.
+                                       0))))))
 
 (defun convert-identifier (s)
   (| (href (identifiers) s)
-     (let n (!? (defined-package (symbol-package s))
-                (convert-identifier-r (make-symbol (+ (symbol-name (symbol-package s)) ":" (symbol-name s))))
-                (convert-identifier-r s))
+     (let n (alet (symbol-name (symbol-package s))
+              (? (| (eql "TRE" !)
+                    (eql "TRE-CORE" !)
+                    (eql "COMMON-LISP" !))
+                 (convert-identifier-r s)
+                 (convert-identifier-r (make-symbol (+ ! "_P_" (symbol-name s))))))
        (awhen (href (converted-identifiers) n)
          (error "Identifier clash: symbol ~A and ~A are both converted to ~A."
                 s ! n))

@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2016 Sven Michael Klose <pixel@copei.de>
-
 (defun inverted-%%go (x)
   (case x :test #'eq
     '%%go-nil      '%%go-not-nil
@@ -29,7 +27,7 @@
      (~%ret? .x.)
      (alet ..x.
        (| (not !)
-          (t? !)))))
+          (eq t !)))))
 
 (define-optimizer optimize-jumps
   (& (%%go-cond? a)

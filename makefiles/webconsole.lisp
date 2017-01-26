@@ -1,5 +1,3 @@
-; tré – Copyright (c) 2008–2016 Sven Michael Klose <pixel@copei.de>
-
 (load "environment/platforms/js/event/names.lisp")
 
 (defvar *log-events?* nil)
@@ -14,14 +12,11 @@
               `(,@(list+ "environment/platforms/shared/"
                          '("continued.lisp"
 
-                           "url/file.lisp"
                            "url/path-pathlist.lisp"
                            "url/path-parent.lisp"
                            "url/path-suffix.lisp"
                            "url/pathname-filename.lisp"
-                           "url/unix-path.lisp"
                            "url/url-path.lisp"
-                           "url/url-with-new-filename.lisp"
                            "url/path-append.lisp"))
 
                 ,@(list+ "environment/platforms/js/"
@@ -64,7 +59,7 @@
                 (toplevel . ((document-extend)
                              (*event-manager*.init-document document)
                              (*event-manager*.set-send-natively-by-default? document t)
-                             (format t "Welcome to tr&eacute;, revision ~A. Copyright (c) 2005-2013 Sven Michael Klose &lt;pixel@copei.de&gt;~%" *tre-revision*))))
+                             (format t "Welcome to tr&eacute;, revision ~A.~%" *tre-revision*))))
               :transpiler  (aprog1 (copy-transpiler *js-transpiler*)
                              (= (transpiler-configuration ! :save-sources?) t))
               :emitter     [(format t "Writing to 'compiled/webconsole.html'…~F")

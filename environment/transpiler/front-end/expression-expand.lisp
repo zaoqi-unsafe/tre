@@ -1,9 +1,6 @@
-; tré – Copyright (c) 2006–2016 Sven Michael Klose <pixel@hugbox.org>
-
 (defvar *expex* nil)
 
-; TODO
-(defun expex-set-global-variable-value (x)
+(defun expex-set-global-variable-value (x) ; TODO – What could this be about?
   (list x))
 
 ;;;; SHARED SETTER FILTER
@@ -108,7 +105,9 @@
     (expex-move-std x)))
 
 (defun expex-move-args (x)
-  (with ((moved new-expr) (assoc-splice (@ #'expex-move (expex-guest-filter-arguments x))))
+  (with (args      (@ #'expex-move (expex-guest-filter-arguments x))
+         moved     (carlist args)
+         new-expr  (cdrlist args))
     (values (apply #'+ moved) new-expr)))
 
 
@@ -135,16 +134,15 @@
       (values moved (make-%= p new-expr.)))))
 
 (defun expex-expr (x)
-  (with-default-listprop x
-    (pcase x
-      %=?            (expex-expr-%= x)
-      %%go-nil?      (expex-%%go-nil x)
-      %var?          (expex-var x)
-      named-lambda?  (expex-lambda x)
-      %%block?       (values nil (expex-body .x))
-      unexpex-able?  (values nil (list x))
-      (with ((moved new-expr) (expex-move-args (expex-argexpand x)))
-        (values moved (list new-expr))))))
+  (pcase x
+    %=?            (expex-expr-%= x)
+    %%go-nil?      (expex-%%go-nil x)
+    %var?          (expex-var x)
+    named-lambda?  (expex-lambda x)
+    %%block?       (values nil (expex-body .x))
+    unexpex-able?  (values nil (list x))
+    (with ((moved new-expr) (expex-move-args (expex-argexpand x)))
+      (values moved (list new-expr)))))
 
 
 ;;;; BODY EXPANSION
