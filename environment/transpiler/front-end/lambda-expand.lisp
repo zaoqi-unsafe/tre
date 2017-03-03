@@ -1,6 +1,6 @@
 ;;;; INLINING
 
-(defun lambda-expand-make-inline-body (stack-places values body)
+(fn lambda-expand-make-inline-body (stack-places values body)
   `(%%block
      ,@(@ #'((stack-place init-value)
               `(%= ,stack-place ,init-value))
@@ -8,7 +8,7 @@
           values)
      ,@body))
 
-(defun lambda-call-embed (lambda-call)
+(fn lambda-call-embed (lambda-call)
   (with-lambda-call (args vals body lambda-call)
     (with (l  (argument-expand 'dummy-in-lambda-call-embed args vals)
            a  (carlist l)
@@ -21,23 +21,22 @@
 
 (define-gensym-generator closure-name ~closure-)
 
-(defun lambda-export (x)
+(fn lambda-export (x)
   (with (name    (closure-name)
          args    (lambda-args x)
          body    (lambda-body x)
          new-fi  (create-funinfo :name   name
                                  :args   args
-                                 :body   body
                                  :parent *funinfo*))
     (funinfo-make-scope-arg new-fi)
-    (transpiler-add-exported-closure *transpiler* `((defun ,name ,args ,@body)))
+    (transpiler-add-exported-closure *transpiler* `((fn ,name ,args ,@body)))
     `(%closure ,name)))
 
 
 ;;;; PASSTHROUGH
 
-(defun lambda-expand-r-unexported-lambda (x)
-  (!? (get-funinfo (lambda-name x))
+(fn lambda-expand-r-unexported-lambda (x)
+  (!? (get-lambda-funinfo x)
       (with-temporary *funinfo* !
         (copy-lambda x :body (lambda-expand-r (lambda-body x))))
       (with (name    (| (lambda-name x)
@@ -45,7 +44,6 @@
              args    (lambda-args x)
              new-fi  (create-funinfo :name   name
                                      :args   args
-                                     :body   (lambda-body x)
                                      :parent *funinfo*))
         (funinfo-var-add *funinfo* name)
         (with-temporary *funinfo* new-fi
@@ -54,11 +52,7 @@
 
 ;;;; TOPLEVEL
 
-(defun lambda-expand-expr (x)
-  (when (%set-local-fun? x)
-     (| (lambda? ..x.)
-        (error "%SET-LOCAL-FUN: Lambda expression expected."))
-     (funinfo-add-local-function-args *funinfo* .x. (lambda-args ..x.)))
+(fn lambda-expand-expr (x)
   (pcase x
     lambda-call?   (lambda-call-embed x)
     lambda?        (? (lambda-export?)
@@ -67,13 +61,13 @@
     named-lambda?  (lambda-expand-r-unexported-lambda x)
     (lambda-expand-r x)))
 
-(defun lambda-expand-r (x)
+(fn lambda-expand-r (x)
   (?
     (atom x)   x
     (atom x.)  (. x. (lambda-expand-r .x))
     (. (lambda-expand-expr x.)
 	   (lambda-expand-r .x))))
 
-(defun lambda-expand (x)
+(fn lambda-expand (x)
   (with-global-funinfo
     (lambda-expand-r x)))

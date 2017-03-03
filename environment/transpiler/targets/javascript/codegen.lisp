@@ -9,7 +9,7 @@
 (define-js-macro %%go (tag)
   `(,*js-indent* "_I_ = " ,tag "; continue" ,*js-separator*))
 
-(defun js-nil? (x)
+(fn js-nil? (x)
   `("(" ,x " == null || " ,x " === false)"))
 
 (define-js-macro %%go-nil (tag val)
@@ -36,7 +36,7 @@
 
 ;;;; FUNCTIONS
 
-(defun js-argument-list (debug-section args)
+(fn js-argument-list (debug-section args)
   (c-list (argument-expand-names debug-section args)))
 
 (define-js-macro function (&rest x)
@@ -160,7 +160,7 @@
 
 ;;;; HASH TABLES
 
-(defun js-literal-hash-entry (name value)
+(fn js-literal-hash-entry (name value)
   `(,(? (symbol? name)
         (make-symbol (symbol-name name))
         name)
@@ -193,7 +193,7 @@
 
 ;;;; METACODES
 
-(defun make-compiled-symbol-identifier (x)
+(fn make-compiled-symbol-identifier (x)
   ($ (!? (symbol-package x)
          (+ (symbol-name !) "_p_")
          "")
@@ -202,19 +202,18 @@
 (defvar *js-compiled-symbols* (make-hash-table :test #'eq))
 
 (define-js-macro quote (x)
-  (with (f  [let s (compiled-function-name-string 'symbol)
-              `(,s " (\"" ,(obfuscated-symbol-name _) "\", "
-	            ,@(? (keyword? _)
-	                 '("KEYWORDPACKAGE")
-                     `(,s "(\"" ,(obfuscated-symbol-name (symbol-package x)) "\")"))
-	            ")")])
-    (cache (aprog1 (make-compiled-symbol-identifier x)
-             (push `("var " ,(obfuscated-identifier !)
-                     " = "
-                     ,@(f x)
-                     ,*js-separator*)
+  (cache (aprog1 (make-compiled-symbol-identifier x)
+           (push `("var " ,(obfuscated-identifier !)
+                   " = "
+                   ,@(let s (compiled-function-name-string 'symbol)
+                       `(,s " (\"" ,(obfuscated-symbol-name x) "\", "
+                               ,@(? (keyword? x)
+                                    '("KEYWORDPACKAGE")
+                                    `(,s "(\"" ,(obfuscated-symbol-name (symbol-package x)) "\")"))
+                            ")"))
+                   ,*js-separator*)
                    (raw-decls)))
-           (href *js-compiled-symbols* x))))
+           (href *js-compiled-symbols* x)))
 
 (define-js-macro %slot-value (x y)
   `(%%native ,x "." ,y))

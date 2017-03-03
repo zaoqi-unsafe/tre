@@ -1,6 +1,7 @@
-(defun mozilla? ()  (< -1 (navigator.user-agent.index-of "Mozilla")))
-(defun webkit? ()   (< -1 (navigator.user-agent.index-of "WebKit")))
-(defun opera? ()    (< -1 (navigator.user-agent.index-of "Opera")))
-(defun gecko? ()    (< -1 (navigator.user-agent.index-of "Gecko")))
-(defun explorer? () (eql "Microsoft Internet Explorer" navigator.app-name))
-
+(fn explorer? () (eql "Microsoft Internet Explorer" navigator.app-name))
+(fn gecko? ()    (< -1 (navigator.user-agent.index-of "Gecko")))
+(fn mozilla? ()  (< -1 (navigator.user-agent.index-of "Mozilla")))
+(fn opera? ()    (< -1 (navigator.user-agent.index-of "Opera")))
+(fn chrome? ()   (& (defined? window.chrome)
+                    (not (opera?))))
+(fn webkit? ()   (< -1 (navigator.user-agent.index-of "WebKit")))

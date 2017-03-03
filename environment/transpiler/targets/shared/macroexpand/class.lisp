@@ -1,6 +1,6 @@
 (defvar *delayed-constructors* nil)
 
-(defun generic-defclass (constructor-maker class-name args &body body)
+(fn generic-defclass (constructor-maker class-name args &body body)
   (with (cname   (? (cons? class-name)
                     class-name.
                     class-name)
@@ -24,7 +24,7 @@
 		    *delayed-constructors*)
 	nil))
 
-(defun generic-defmethod (class-name name args &body body)
+(fn generic-defmethod (class-name name args &body body)
   (print-definition `(defmethod ,class-name ,name ,@(!? args (list !))))
   (!? (href (thisify-classes) class-name)
       (let code (list args body)
@@ -35,9 +35,9 @@
       (error "Cannot define method ~A for undefined class ~A." name class-name))
   nil)
 
-(defun generic-defmember (class-name &rest names)
+(fn generic-defmember (class-name &rest names)
   (print-definition `(defmember ,class-name ,@names))
   (!? (href (thisify-classes) class-name)
-      (append! (class-members !) (@ [list _ t] names))
+      (+! (class-members !) (@ [list _ t] names))
       (error "Class ~A is not defined." class-name))
   nil)

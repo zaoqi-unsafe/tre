@@ -1,24 +1,25 @@
-(defvar *attribute-xlat*
-  (new "class" "className"))
+(fn caroshi-ancestor-or-self-if (node pred)
+  (ancestor-or-self-if node pred))
 
+(defvar *attribute-xlat* (new "class" "className"))
 (defvar *attribute-xlat-rev* (make-hash-table))
 
-(defun make-attribute-xlat ()
+(fn make-attribute-xlat ()
   (maphash #'((k v)
 		        (= (aref *attribute-xlat-rev* v) k)
 		        (= (aref *attribute-xlat-rev* (downcase v)) k))
 	   	   *attribute-xlat*))
 (make-attribute-xlat)
 
-(defun xlat-attribute (x)
+(fn xlat-attribute (x)
   (aref *attribute-xlat* x))
 
-(defun make-native-element (name doc ns)
+(fn make-native-element (name doc ns)
   (? (& ns (defined? doc.create-element-n-s))
      (doc.create-element-n-s ns name)
      (doc.create-element name)))
 
-(defun *element (name &optional (attrs nil) (style nil) &key (doc document) (ns nil))
+(fn *element (name &optional (attrs nil) (style nil) &key (doc document) (ns nil))
   (aprog1 (make-native-element name doc ns)
 	(hash-merge ! caroshi-element.prototype)
     (!.write-attributes attrs)
@@ -48,9 +49,6 @@
     query-selector
     query-selector-all
     _caroshi-rotation)
-
-(defmethod caroshi-element child-array ()
-  this.child-nodes)
 
 (defmethod caroshi-element child-list ()
   (array-list child-nodes))
@@ -102,18 +100,9 @@
 (defmethod caroshi-element add-text (text)
   (add (new *text-node text)))
 
-; XXX last-child-BY-class
-(defmethod caroshi-element last-child-of-class (cls)
-  (with (elm nil
-		 chlds (child-array))
-	(doarray (x chlds elm)
-	  (& (string== cls (x.get-class))
-		 (= elm x)))))
-
 (defmethod caroshi-element read-attribute (name)
-  (declare type string name)
-  (| (awhen (xlat-attribute name)
-       (get-attribute !))
+  (| (!? (xlat-attribute name)
+         (get-attribute !))
      (get-attribute name)))
 
 (defmethod caroshi-element read-attributes ()
@@ -142,8 +131,8 @@
 
 (defmethod caroshi-element write-attribute (name value)
   (set-attribute name value)
-  (awhen (xlat-attribute name)
-    (set-attribute ! value))
+  (!? (xlat-attribute name)
+      (set-attribute ! value))
   value)
 
 (defmethod caroshi-element write-attributes (attrs)
@@ -153,53 +142,28 @@
   attrs)
 
 (defmethod caroshi-element remove-attributes (attrs)
-  (adolist attrs
-    (remove-attribute !)))
+  (@ (i attrs)
+    (remove-attribute i)))
 
 (defmethod caroshi-element has-name? (x)
   (member (downcase (get-name)) (@ #'downcase (ensure-list x)) :test #'string==))
 
-(defmethod caroshi-element get-name ()
-  (read-attribute "name"))
-
-(defmethod caroshi-element set-name (x)
-  (write-attribute "name" x))
-
-(defmethod caroshi-element class? (x)
-  (!? (read-attribute "class")
-      (let c (+ " " ! " ")
-        (adolist ((ensure-list x))
-          (& (< -1 (c.index-of (+ " " ! " ")))
-             (return t))))))
-
-(defmethod caroshi-element get-class ()
-  (read-attribute "class"))
-
-(defmethod caroshi-element get-classes ()
-  (split #\  (get-class) :test #'character==))
-
-(defmethod caroshi-element set-class (x)
-  (write-attribute "class" x))
+(defmethod caroshi-element get-name ()     (read-attribute "name"))
+(defmethod caroshi-element set-name (x)    (write-attribute "name" x))
+(defmethod caroshi-element get-class ()    (read-attribute "class"))
+(defmethod caroshi-element get-classes ()  (split #\  (get-class) :test #'character==))
+(defmethod caroshi-element class? (x)      (find x (get-classes) :test #'string==))
+(defmethod caroshi-element set-class (x)   (write-attribute "class" x))
 
 (defmethod caroshi-element add-class (x)
-  (let classes (get-classes)
-	(unless (member x classes :test #'string==)
-      (set-class (concat-stringtree
-				     (pad (+ classes (list x))
-					   	  " "))))))
+  (unless (class? x)
+    (set-class (+ (get-class) " " x))))
 
-(defmethod caroshi-element add-classes (x)
-  (@ (i x x)
-    (add-class i)))
-
-(defun remove-string== (x lst)
-  (remove x lst :test #'string==))
+(fn caroshi-remove-class (elm x)
+  (elm.set-class (apply #'string-concat (pad (remove x (elm.get-classes) :test #'string==) " "))))
 
 (defmethod caroshi-element remove-class (x)
-  (? (cons? x)
-     (adolist x
-       (remove-class !))
-     (set-class (apply #'string-concat (pad (remove-string== x (get-classes)) " ")))))
+  (caroshi-remove-class this x))
 
 (defmethod caroshi-element set-id (id)
   (? id
@@ -224,18 +188,17 @@
   (= (aref style k) v))
 
 (defmethod caroshi-element get-style (x)
-  (declare type string x)
   (| (aref style x)
      (aref (document.default-view.get-computed-style this nil) x)))
 
-(defmethod caroshi-element show ()
-  (set-style "display" ""))
-
-(defmethod caroshi-element hide ()
-  (set-style "display" "none"))
+(defmethod caroshi-element show () (set-style "display" ""))
+(defmethod caroshi-element hide () (set-style "display" "none"))
 
 (defmethod caroshi-element get-opacity ()
-  (number (get-style "opacity")))
+  (!= (get-style "opacity")
+    (? (empty-string-or-nil? !)
+       1
+       (number (get-style "opacity")))))
 
 (defmethod caroshi-element set-opacity (x)
   (? (== 1 x)
@@ -257,7 +220,6 @@
 
 ;; Set absolute position relative to browser window.
 (defmethod caroshi-element set-position (x y)
-  (declare type number x y)
   (set-styles (new "left" (+ x "px")
                    "top"  (+ y "px")))
   this)
@@ -317,7 +279,6 @@
 
 (defmethod caroshi-element find-element-at (x y)
   (do-children (i this this)
-    (dom-extend i)
 	(& (element? i)
 	   (i.inside? x y)
 	   (return (| (i.find-element-at x y)
@@ -375,13 +336,6 @@
   (this.remove-children)
   (& html (= inner-h-t-m-l html))
   (dom-tree-extend this))
-
-(defmethod caroshi-element get-if (predicate)
-  (with-queue n
-    (walk [& (element? _)
-             (funcall predicate)
-             (enqueue n _)])
-    (queue-list n)))
 
 (defmethod caroshi-element get-child-at (idx)
   (assert (integer<= 0 idx) (+ "caroshi-element get-child-at " idx " is not a positive integer"))

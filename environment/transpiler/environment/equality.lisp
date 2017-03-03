@@ -1,4 +1,4 @@
-(defun eql (a b)
+(fn eql (a b)
   (| a (setq a nil))
   (| b (setq b nil))
   (| (eq a b)
@@ -11,7 +11,9 @@
           (character? b))   (character== a b))))
 
 (defmacro eql (a b)
-  (? (| (string? a)
-        (string? b))
-     `(string== ,a ,b)
-     `(eql ,a ,b)))
+  (?
+    (| (string? a)
+       (string? b))          `(string== ,a ,b)
+    (| (literal-symbol? a)
+       (literal-symbol? b))  `(eq ,a ,b)
+    `(eql ,a ,b)))
