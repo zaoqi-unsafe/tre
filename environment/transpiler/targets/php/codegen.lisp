@@ -52,11 +52,11 @@
 
 (define-php-macro %%go-nil (tag val)
   (let v (php-dollarize val)
-    (php-line "if (!" v " && !is_string (" v ") && !is_numeric (" v ") && !is_array (" v ")) { " (php-jump tag) "; }")))
+    (php-line "if (!" v " && !is_string (" v ") && !is_numeric (" v ") && !is_array (" v ")) " (php-jump tag))))
 
 (define-php-macro %%go-not-nil (tag val)
   (let v (php-dollarize val)
-    (php-line "if (!(!" v " && !is_string (" v ") && !is_numeric (" v ") && !is_array (" v "))) { " (php-jump tag) "; }")))
+    (php-line "if (!(!" v " && !is_string (" v ") && !is_numeric (" v ") && !is_array (" v "))) " (php-jump tag))))
 
 
 ;;;; FUNCTIONS
@@ -227,31 +227,19 @@
 (define-php-macro =-aref (val arr &rest indexes)
   `(=-href ,val ,arr ,@indexes))
 
-(define-php-macro php-aref (arr &rest indexes)
+(define-php-macro %aref (arr &rest indexes)
   `(%%native ,(php-dollarize arr) ,@(php-array-subscript indexes)))
 
-(define-php-macro %%%=-aref (val &rest x)
-  `(=-php-aref ,val ,@x))
-
-(define-php-macro php-aref-defined? (arr &rest indexes)
+(define-php-macro %aref-defined? (arr &rest indexes)
   `(%%native "isset (" ,(php-dollarize arr) ,@(php-array-subscript indexes) ")"))
 
-(define-php-macro =-php-aref (val &rest x)
-  `(%%native (php-aref ,@x)
+(define-php-macro =-%aref (val &rest x)
+  `(%%native (%aref ,@x)
              ,(php-assignment-operator val)
              ,(php-dollarize val)))
 
 
 ;;;; HASH TABLES
-
-(fn php-array-indexes (x)
-  (mapcan [list "[" (php-dollarize _) "]"] x))
-
-(define-php-macro %%%href (h &rest k)
-  `(%%native ,(php-dollarize h) ,@(php-array-indexes k)))
-
-(define-php-macro %%%href-set (v h &rest k)
-  `(%%native ,(php-dollarize h) ,@(php-array-indexes k) " = " ,(php-dollarize v)))
 
 (define-php-macro href (h k)
   `(%%native "(is_a (" ,(php-dollarize h) ", '__l') || is_a (" ,(php-dollarize h) ", '__array')) ? "
@@ -280,7 +268,7 @@
 (define-php-macro %new (&rest x)
   (? x
      `(%%native "new " ,x. ,@(php-argument-list .x))
-     `(%%native "new stdClass()")))
+     `(%%native "[]")))
 
 (define-php-macro delete-object (x)
   `(%%native "null; unset " ,x))
